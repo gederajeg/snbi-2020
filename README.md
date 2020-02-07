@@ -14,3 +14,8 @@ This is a repository of an R Project (including the dataset and R Markdown Noteb
 
 The seminar's program book, containing the abstracts, is available [here](https://ucs.unud.ac.id/userfiles/menu_frontend/73d39c43a119b2f19e6f650cbaf1b555.pdf).
 
+To run the codes, the following R packages need to be installed:
+
+- [tidyverse](https://www.tidyverse.org)
+- [collogetr](https://gederajeg.github.io/collogetr/index.html)
+
