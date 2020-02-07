@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+admins-docs/
+InLali*
+*.xlsx
+*.pptx
+*.DS_Store
