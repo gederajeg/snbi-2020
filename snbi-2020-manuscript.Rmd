@@ -1,0 +1,359 @@
+---
+title: "Contrasting the semantics of Indonesian -*kan* & -*i* verb pairs: A usage-based, constructional approach"
+author: "Gede Primahadi Wijaya R<span style='font-variant:small-caps;'>ajeg</span>, I Made R<span style='font-variant:small-caps;'>ajeg</span>, I Wayan A<span style='font-variant:small-caps;'>rka</span>"
+date: "Created 21 January, 2020; Last Update `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  bookdown::pdf_document2:
+    fig_caption: true
+    number_sections: true
+    df_print: "kable"
+  bookdown::word_document2:
+    fig_caption: true
+    fig_width: 6
+    reference_docx: "snbi-2020-manuscript-temp.docx"
+  html_notebook: default
+bibliography: 'biblio.bib'
+link-citations: false
+csl: 'apa-single-spaced.csl'
+---
+
+**Abstract**
+
+This paper provides fresh empirical evidence that meanings emerge across different levels of constructions (i.e., morphological and syntactic), and that alternative constructions exhibit complex interaction of construction with grammaticalisation, which possibly alter the meaning and semantic contrast of morphologically related words. To this end, we demonstrate a quantitative method in usage-based, Construction Grammar, namely *Collostructional Analysis*, and apply it in the context of a hypothesis concerning semantic (dis)similarity between verb pairs suffixed with -*kan* and -*i* in Indonesian. We analyse one of the example pairs given in Sneddon et al. (2010), namely *mengenai/mengenakan* (both translated as 'subjet to' by Sneddon et al.), that they claim to illustrate a blurry semantic difference between -*kan*/-*i* verbs in common usage. Contrary to Sneddon et al.'s claim, the results from collocational analysis revealed that the verbs convey substantially different meanings. We argue for the importance of quantitative usage-based or data-driven approach in addressing hypothesis regarding semantic (dis)similarity of words. 
+
+keywords: Indonesian -*kan*/-*i* verb pairs; Construction Grammar; Usage-based model of language; Quantitative Corpus Linguistics; Collostructional Analysis; R programming language
+
+
+# Introduction {#intro}
+
+```{r setup, message = FALSE, echo = FALSE}
+# global option chunck
+knitr::opts_chunk$set(fig.width = 7, 
+                      fig.asp = 0.618,
+                      fig.retina = 2,
+                      dpi = 300,
+                      dev = "pdf",
+                      echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.path = "figures/")
+
+suppressPackageStartupMessages(library(tidyverse))
+library(collogetr)
+
+```
+
+```{r unused-text}
+# Arka [-@arka_morpholexical_1993] adopts a lexicalist approach (i.e., Lexical Functional Grammar) to account for the morphosyntactic and semantic properties of causative function of -*kan*, proposing that the -*kan* causative was a lexical rather than syntactic process.
+
+# To do proper SCA, the corpus should be parsed and annotated syntactically so that sentences reflecting the ditransitive pattern can be (semi-)automatically retrieved. Also, the words in the corpus need to be tagged with part-of-speech information [cf. @stefanowitsch_collostructions_2003].
+```
+
+
+Several studies with different theoretical persuasions have attempted to analyse the intricate behaviour of Indonesian verbal suffixes -*kan* and -*i* [@arka_morpholexical_1993; @kroeger_morphosyntactic_2007; @cole_argument_2004; @arka_linguistic_2009]. Their main themes include the (i) role of the suffixes as valency-changing mechanism, (ii) the resulting argument-structure of the derived verbs, and (iii) the competing account over polysemy/homonymy nature of the suffixes, given their function for causativisation, applicativisation, and transitivisation.
+
+Another area of inquiry is the semantic (dis)similarity between -*kan* and -*i* verb pairs, that is, verb partners with the same root co-occurring with the two suffixes (e.g., *melangkahi* 'to step over' and *melangkahkan* 'to step (the foot) forward' based on noun root *langkah* 'step'). When the semantics of the -*kan*/-*i* verb pairs are contrasted, the focus is mostly on the difference in the semantic roles of their direct objects [cf., e.g., @arka_linguistic_2009]. The Locative/Goal-related roles are mapped onto the direct object of -*i* verbs, while the -*kan* partners are associated with Non-Locative roles (e.g., Patient, Theme, Beneficiary) [@arka_linguistic_2009, 5; @kroeger_morphosyntactic_2007; @sneddon_indonesian_2010, 100; see @rajeg_semantic_2018 for a computational and distributional semantic approach with reference to denominal verbs]. 
+
+One major drawback of the previous works is that argumentation for such semantic difference is typically based on selected usage sentences of a given verb, subjected to grammaticality judgement [but cf. @arka_linguistic_2009, who also include natural usage data from the web]. Such an approach has failed to address, in a more objective and quantifiable manner, the *common usage patterns* of specific -*kan*/-*i* pairs in large collection of text (i.e., linguistic corpora). The usage patterns we meant here reflect the verbs' co-occurrence distribution with other words. We argue that capturing this co-occurrence distribution of -*kan*/-*i* verb pairs is by no means (i) less indicative of semantic difference between the contrasted verbs [cf. @stefanowitsch_empirical_2010, 368] and (ii) inferior to the mainstream argument-structure and semantic role analyses. 
+
+This paper proposes a new perspective in examining the hypothesis regarding semantic difference between -*kan* and -*i* verb pairs (see below), harnessing the growing interest in (i) the usage-based model of language (§[\@ref(cxg)](#cxg)) [@diessel_usage-based_2017; @goldberg_constructions_2006, 12-14; @langacker_usage-based_1988], and (ii) the quantitative turn in linguistics [@dancygier_quantitative_2017]. We contextualise this study within the hypotheses that there are -*kan*/-*i* pairs that exhibit (i) completely different meanings, and/or (ii) indistinguishable meaning (i.e., the pairs are ambiguous in their semantics). We test one of these hypotheses as proposed by Sneddon et al. [-@sneddon_indonesian_2010, 101], stating that:
+
+> "with a number of words the distinction between -**kan** and -**i** is blurred in *common usage*. In some cases, both -**i** and -**kan** occur with the same meaning. With some there is a recipient or locative object, while with others the object is patient." (italics ours).
+
+One example given to illustrate this idea is *mengenai*/*mengenakan* verb-pair, both translated as 'subject to' by Sneddon et al. [-@sneddon_indonesian_2010, 101]. The root of these verbs is *kena* '(get) hit (by), knock against; to come into contact with, touch, strike' [see @stevens_comprehensive_2004, 478]. While the hypothesis above is about blurry semantics of -*kan*/-*i* pairs in "common usage", Sneddon et al. [-@sneddon_indonesian_2010, 101] did not provide any sentential example for how *mengenai* and *mengenakan* come to mean 'subject to'. Furthermore, the above quote exemplifies a kind of semantic role analysis regarding semantic (dis)similarity between -*kan*/-*i* pairs.
+
+Our main aim is to look at this long-standing issue in a new light, going beyond investigating the semantic roles and the verbs' argument-structure pattern. We propose a fully data-driven approach through a quantitative corpus linguistic method, called *Collostructional Analysis* (CollAna) [@hoffmann_collostructional_2013] (§[\@ref(collana)](#collana)). CollAna is developed within the spirit of the usage-based, Construction Grammar framework (§[\@ref(cxg)](#cxg)) [@goldberg_constructions_2006; @hoffmann_constructionist_2013]. As a preliminary example, we test whether *mengenai* and *mengenakan* do have the same meaning (i.e., 'subject to') as Sneddon et al. [-@sneddon_indonesian_2010, 101] suggest. As we shall see in §[\@ref(results)](#results), collocational data and further corpus-based evidence contradict the semantic-similarity hypothesis between *mengenai/mengenakan*. While this paper only provides analysis for one pair of verbs, the conclusion of which is thus limited, the method is applicable to many other verb pairs.
+
+The remainder of this section provides a brief overview of the usage-based model of language and Construction Grammar (§[\@ref(cxg)](#cxg)). We then present the corpus-data source (§[\@ref(method)](#method)) and describe the *Collostructional Analysis* in more details (§[\@ref(collana)](#collana)). The results are discussed in §[\@ref(results)](#results), followed by the conclusion in §[\@ref(conclusion)](#conclusion).
+
+## Usage-based model of language and Construction Grammar {#cxg}
+
+The usage-based model of language (hereafter UBL) is inspired by pioneering research in functional and cognitive linguistics that highlight the centrality of conceptual and pragmatic factors in shaping linguistic structure and meaning [@diessel_usage-based_2017]. One of the main tenets in UBL is that humans' linguistic knowledge, including its organisation and structure, is "grounded in the language user’s experience with concrete words and utterances" [@behrens_frequency_2016, 209]. Another aspect central to UBL is the role of frequency of (co-)occurrence in the structure and meaning of linguistic units [@diessel_usage-based_2017; @diessel_frequency_2016; @behrens_frequency_2016]. This paper demonstrates how frequency of co-occurrence between words derived from usage data plays a role in distinguishing meanings of words.
+
+Construction Grammar (CxG) is a theory of linguistic knowledge concerning what speakers know when they need to produce and process a language [cf. @hilpert_entrenchment_2016]. CxG and UBL come into close alliance as they share the view that linguistic knowledge (i) is shaped by usage and frequency via domain-general cognitive processes (e.g., automatisation, schematisation, chunking), and (ii) consists of large interconnected inventory of symbolic units (i.e., form-meaning pairings), called *constructions* [@goldberg_constructions_2006; @hoffmann_constructionist_2013; @fillmore_mechanisms_1988]. Constructions in CxG range from morpheme, concrete lexical items, such as words, up to complex phrases, idioms, and abstract grammatical patterns [@goldberg_constructions_2006; @hoffmann_constructionist_2013; @fillmore_mechanisms_1988, 42].
+
+In generative linguistics, collocation is relegated to a marginal position in linguistic theorising and not part of the theory of grammar [@diessel_frequency_2016]. However, in the usage-based framework, such as Construction Grammar, collocation and partially/fully fixed multiword expressions (i.e., prefabricated linguistic units) take a central position in language users' linguistic knowledge, alongside generalisation of abstract grammatical patterns [@hilpert_entrenchment_2016, 62; @goldberg_constructions_2006, Ch.3; @diessel_usage-based_2017; @fillmore_regularity_1988].
+
+In the usage-based approach to meaning, word co-occurrence, such as collocation, is one operationalisation of *context of use* in characterising the meaning of a given word [@stefanowitsch_empirical_2010]. This approach actualises Firth's [-@firth57synopsis, 11] famous quote that "you shall know a word by the company it keeps!", and Wittgenstein's proposal that "the meaning of a word is its use in the language" [cited from @stefanowitsch_empirical_2010, 368]. We argue that collocation should not be overlooked in characterising the semantic (dis)similarity of -*kan*/-*i* verb pairs, given the centrality of collocation as part of language users' linguistic knowledge as conceived in CxG, and its significance as usage-based evidence for semantics.
+
+# Data and methods {#method}
+
+```{r leipzig-size, message = FALSE, warning = FALSE}
+corpsize <- prettyNum(readr::read_tsv("/Users/Primahadi/Google Drive/MeNasal/leipzig_corpus_size.txt")[1,2], big.mark = ",")
+```
+
+
+The analysis in this paper is based on data sourced from one corpus text-file in the *Indonesian Leipzig Corpora* collection [@quasthoff_indonesian_2013; @goldhahn_building_2012], namely `ind_mixed_2012_1M-sentences.txt`. This file is mostly derived from Indonesian online news website [@quasthoff_indonesian_2013, 26] and amounts to `r corpsize` million word-tokens.
+
+## Collostructional Analysis {#collana}
+
+*Collostructional Analysis* (CollAna) is a cover term for a family of quantitative corpus linguistic methods that is designed to capture the interface between (abstract) grammatical constructions and lexical items [see @stefanowitsch_collostructions_2003 for the foundational paper; for recent overview, see @hoffmann_collostructional_2013; @herbst_collostructional_2014]. CollAna expands the collocation technique (i.e., word-word co-occurrence) in corpus linguistics into determining the association between word and grammatical constructions.
+
+The earliest iteration of CollAna is called *Simple Collexeme Analysis* (SCA) [@hoffmann_collostructional_2013]. SCA investigates association between a word (i.e., lexical construction in CxG) and a slot in a grammatical construction (e.g., argument-structure construction). Stefanowitsch and Gries [-@stefanowitsch_collostructions_2003] illustrates SCA to identify verbs strongly attracted to the predicate slot in the English ditransitive construction. Since  this construction is not specified lexically, but rather an abstract grammatical pattern for basic sentence type, Stefanowitsch and Gries [-@stefanowitsch_collostructions_2003] propose that the constructional semantics associated with the ditransitive can be read off from the semantics of verbs occurring significantly more frequently in the ditransitive than in other grammatical constructions. It is found that *give* is the most strongly attracted verb in the ditransitive that is semantically compatible with the prototypical 'transfer' sense of the ditransitive [see @stefanowitsch_collostructions_2003, 227-230 for details].
+
+Our study may extends CollAna to investigate the different usage (i.e. collocation), and probe subtle semantic differences, between two morphologically related words^[Note that in the R programming script [@gries_collanalysis_2014] to run the variety of CAs, SCA can be optionally used to run collocate analysis.] [@stefanowitsch_collostructions_2003, 217-218]. In this paper, we study a pair of verb forms, and, as a preliminary attemp, use their direct object collocates^[Future work is needed to investigate the nature of the subject NP of the contrasted verbs.] for characterising their meanings. However, since the corpus we used is not tagged with any syntactic, morphological, and part-of-speech information, we limit the collocates to be one word immediately following the verb in the corpus (i.e., the verbs' R1 collocates); hence, the collocational schema of [*mengenai*/*mengenakan* + <span style = "font-variant:small-caps;">w</span>], in which <span style = "font-variant:small-caps;">w</span> refers to any 'word'. We expect that the R1 collocate will capture the direct object slot that immediately follow the verbs [see @rajeg_analisis_2019 for similar approach; cf. @stefanowitsch_collostructions_2003, 220-222, for a study on the word *cause*]. This choice is indeed an approximation, and we need to verify that with the results that we obtain.
+
+[Table \@ref(tab:crosstab-schema-new)](#crosstab-schema-new) shows the schematic crosstabulation design to calculate the mutual association strength (i.e., degree of collocation strength) between a word and construction (in our case, between a given verb and its R1 collocates) [cf. @stefanowitsch_collostructions_2003, 218-219; @hoffmann_collostructional_2013].
+
+```{r data-load}
+collout <- readRDS("data/collocsearch_mengenai_mengenakan.rds")
+```
+
+```{r collana, message = FALSE, warning = FALSE}
+# preparing input data for CollAna
+assoc_tb <- collogetr::assoc_prepare(collout,
+                                     window_span = "r1",
+                                     stopword_list = pull(collout$freqlist_df[1:20, ], w))
+
+# preparing input data for DCA
+dca_tb <- collogetr::assoc_prepare_dca(assoc_tb)
+
+# simple collexeme/collocate analysis
+ca_res <- collogetr::collex_fye(assoc_tb)
+
+# distinctive collexeme/collocate analysis
+dca_res <- collogetr::collex_fye_dca(dca_tb)
+```
+
+
+
+```{r crosstab-schema-old, include = FALSE}
+xtabdata <-  dplyr::filter(assoc_tb, node == "mengenakan", w == "baju")$data[[1]]
+xtabdata1 <- matrix(c(xtabdata$a, xtabdata$b, 
+                      xtabdata$c, xtabdata$d),
+                    nrow = 2, 
+                    byrow = FALSE)
+colnames(xtabdata1) <- c("*baju*", "other words")
+rownames(xtabdata1) <- c("*mengenakan*", "elsewhere")
+knitr::kable(apply(addmargins(xtabdata1), 2, prettyNum, big.mark = ","), 
+             caption = "Crosstabulation data for calculating the association strength between *mengenakan* and *baju*")
+```
+
+
+```{r crosstab-schema-new}
+xtabsch <- matrix(c("a", "b", "a+b",
+                    "c", "d", "c+d",
+                    "a+c", "b+d", "a+b+c+d"),
+                  nrow = 3,
+                  byrow = FALSE)
+colnames(xtabsch) <- c("word/collocate_X", "other_words", "Sum")
+rownames(xtabsch) <- c("construction/word_X", "elsewhere", "Sum")
+
+knitr::kable(xtabsch, caption = "crosstabulation design for calculating association strength between a word and a construction")
+```
+
+Cell `a` in [Table \@ref(tab:crosstab-schema-new)](#crosstab-schema-new) represents frequency of co-occurrence between a given construction/word (first row) and its collocate (first column), and is the cell of interest in determining the direction (positive/negative) of association between the construction and its collocate. Cell `b` is the frequency of the collocate in other contexts and cell `c` contains the frequency of the construction with other words [cf. @hoffmann_collostructional_2013]. Let us now flesh this out with the frequencies required in SCA to measure the association between *mengenakan* (the target, verbal lexical construction) and *baju* 'clothes/apparel' (the R1 collocate of *mengenakan*) (see [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1)); note that the numbers in italics are retrieved directly from the corpus data, the remaining ones are the results of subtractions [@stefanowitsch_collostructions_2003, 218].
+
+```{r fye-on-example-table1, echo = FALSE, warning = FALSE, message = FALSE}
+# get the relevant data
+exmdata <- assoc_tb %>% filter(node=='mengenakan', w=='baju') %>% unnest(cols = data)
+
+# create crosstabulation matrix
+crosstab <- matrix(data = c(exmdata$a, exmdata$b, exmdata$c, exmdata$d),
+                   nrow = 2, 
+                   byrow = F)
+
+# give column and row names
+colnames(crosstab) <- c("baju", "other_words")
+rownames(crosstab) <- c("mengenakan", "elsewhere")
+crosstab <- addmargins(crosstab)
+
+
+# calculate expected frequency for a 2-by-2 crosstabulation matrix
+crosstab_exp <- chisq.test(crosstab)$expected
+crosstab_exp <- round(crosstab_exp, digits = 2) # rounding floating points
+
+# crosstab to print with expected freq.
+crosstab1 <- crosstab
+crosstab1[1,1] <- paste("*", prettyNum(crosstab[1,1], big.mark = ","),
+                        "*",
+                        " (",
+                        prettyNum(crosstab_exp[1,1], big.mark = ","),
+                        ")",
+                        sep = "")
+crosstab1[1,2] <- paste(prettyNum(crosstab[1,2], big.mark = ","),
+                        " (",
+                        prettyNum(crosstab_exp[1,2], big.mark = ","),
+                        ")",
+                        sep = "")
+crosstab1[2,1] <- paste(prettyNum(crosstab[2,1], big.mark = ","),
+                        " (",
+                        prettyNum(crosstab_exp[2,1], big.mark = ","),
+                        ")",
+                        sep = "")
+crosstab1[2,2] <- paste(prettyNum(crosstab[2,2], big.mark = ","),
+                        " (",
+                        prettyNum(crosstab_exp[2,2], big.mark = ","),
+                        ")",
+                        sep = "")
+crosstab1[3,1] <- paste("*", prettyNum(crosstab[3,1], big.mark = ","),
+                        "*", sep = "")
+crosstab1[1,3] <- paste("*", prettyNum(crosstab[1,3], big.mark = ","),
+                        "*", sep = "")
+crosstab1[3,3] <- paste("*", prettyNum(crosstab[3,3], big.mark = ","),
+                        "*", sep = "")
+crosstab1[3,2] <- paste(prettyNum(crosstab[3,2], big.mark = ","), sep = "")
+crosstab1[2,3] <- paste(prettyNum(crosstab[2,3], big.mark = ","), sep = "")
+
+# print out the crosstabulation with expected frequency
+knitr::kable(crosstab1, caption = "Crosstabulation data for the input of *Fisher-Yates Exact* (FYE) test (numbers in brackets are expected frequencies)")
+```
+
+The direction of association between a given construction and a word is captured by comparing the so-called **observed frequency** ([co-]occurrence frequency in the corpus) with the **expected frequency** ([co-]occurrence frequency expected based on chance alone) [see @gries_statistics_2009, 168-171; @rajeg_pemahaman_2019, 21-22, for details on observed vs. expected frequency]. For data in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1), we compare the observed and expected frequency in cell `a` (i.e., the intersection between *mengenakan* and *baju* 'clothes/apparel'). It turns out that the observed frequency (i.e., `r crosstab[1,"baju"]`) is larger than the frequency we would expect by chance when two words co-occur in the corpus (i.e., expected frequency of `r crosstab_exp[1, "baju"]`). This positive deviation from the expected frequency indicates positive association between *mengenakan* and *baju* (i.e., they are mutually attracted to each other).
+
+The next step is measuring how significantly strong that mutual association is using distributional statistical significance testing. We feed the observed frequencies in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1) into the one-tailed *Fisher-Yates Exact* (FYE) test. FYE computes the probability of the observed distribution in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1) and all more extreme distributions, maintaining the same marginal sum-frequencies [@stefanowitsch_collostructions_2003, 218]. The following is a code-snippet for running FYE for [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1) in R [@rcore2019]. We can use the `fisher.test()` function (the `alternative` argument is set to `"greater"` since the observed frequency of cell `a` is larger than the expected frequency).
+
+```{r fye-on-example-table2, echo = TRUE}
+# create crosstabulation matrix
+crosstab <- matrix(data = c(83, 1552, 1017, 11884989), nrow = 2, byrow = FALSE)
+
+# give column and row names
+colnames(crosstab) <- c("baju", "other_words")
+rownames(crosstab) <- c("mengenakan", "elsewhere")
+
+# Run Fisher-Exact test
+pfye <- fisher.test(crosstab, alternative = "greater")
+
+# print out the probability (i.e., p-value)
+pfye$p.value
+```
+
+The output *p*-value above is extremely small (*p* < 0.001)^[In CollAna, threshold for significance is set to be *p* < 0.05.]. It indicates that there is an extremely low probability that the co-occurrence observed frequency of `r crosstab[1,"baju"]` (or even more often) for *mengenakan* and *baju* would have come about by chance alone. In other words, there is a highly significant mutual attraction/association between *mengenakan* and *baju*, such that they can be considered a significantly strong collocation (*mengenakan baju* 'to wear clothes/apparel'). 
+
+For expository reason, the *p*-value is converted into a base-ten logarithm value (see the R code below), so that positive association (i.e., observed frequency is larger than the expected one) produces positive value and vice versa [see @stefanowitsch_covarying_2005, 7]. This value is then called the *collostruction/association strength* (hereafter AssocStr). AssocStr values greater than 1.30103 are significant at the level of *p* < 0.05, while those greater than 2 and 3 are significant at the level of *p* < 0.01 and *p* < 0.001, respectively.
+
+```{r log10-transform, echo = TRUE}
+# convert into collostruction strength for expository reason
+-log(pfye$p.value, 10) 
+```
+
+The log-transformed *p*-value above indicates highly strong attraction between *mengenakan* and *baju* 'clothes/apparel'. All the above steps need to be repeated to all R1 collocates of the studied verbs; we removed the top-20 most frequent words^[These are the stopwords removed from the analysis: `r paste(paste("*", pull(collout$freqlist_df[1:20, ], w), "* (n = ", prettyNum(pull(collout$freqlist_df[1:20, ], n), big.mark = ","), ")", sep = ""), collapse = "; ")`. They are predominantly function words, such as prepositions, pronouns, conjunctions, determiners.] in the corpus from the calculation of the association strength^[Note that the total size of the corpus (i.e., `r prettyNum(addmargins(matrix(data = c(exmdata$a, exmdata$b, exmdata$c, exmdata$d), nrow = 2, byrow = F))[3,3], big.mark = ",")`; see the bottom right cell in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1)) is reduced from the original size-count (i.e., `r corpsize`). This is due to two procedures: (i) the removal of the 20 stop words, and (ii) tokenisation of the original corpus in creating frequency list for collocational analysis; the frequency list only retains alphabetic word-tokens that are at least two-letters long, and, in that case, we removed one-letter tokens, numbers, and incomplete strings (i.e., those initiated or ended with hyphens).]. Then, the collocates for each verb can be rank ordered according to their AssocStr values. To automatise this computation, including the collocates retrieval, we designed an R package called *collogetr* [@rajeg_collogetr_2019], and wrote the paper fully in R using R Markdown to interleave the narratives with the R codes.
+
+# Results and discussion {#results}
+
+As mentioned in §[\@ref(intro)](#intro), one issue in Sneddon et al.'s [-@sneddon_indonesian_2010] characterisation for the semantic (dis)similarity between -*kan*/-*i* verb-pairs, such as *mengenai* and *mengenakan* (both glossed as 'subject to'), is the absence of actual usage sentences illustrating the meaning of these verbs. Decontextualising the meaning of verbs poses difficulty for foreign learners of Indonesian regarding how the verbs are actually used in sentences. Moreover, Sneddon et al.'s claim that *mengenai* and *mengenakan* convey the same meaning contradicts our native-speaker intuition with how these verbs are actually used. In this section, we present quantitative and usage-based characterisation for *mengenai*/*mengenakan* pair based on their collocational patterns; we show that these verbs convey different semantics. To begin with, consider [Table \@ref(tab:top-collocates-kenai)](#top-collocates-kenai) presenting the top-20 most strongly attracted R1 collocates for *mengenai*.
+
+```{r shared-collocs}
+shared_collocs <- subset(dca_res, dist_for == "mengenai" & mengenakan > 0)$w
+shared_collocs <- c(subset(dca_res, dist_for == "mengenakan" & mengenai > 0)$w,
+                    shared_collocs)
+shared_collocs <- unique(shared_collocs)
+```
+
+```{r dikenai}
+dikenai <- readRDS("data/conc_dikenai.rds")
+phys_touch <- c(125, 17, 27, 41, 68, 93, 101)
+phys_disease_affected <- c(13, 38, 43, 81, 124, 126, 128)
+typo <- c(114)
+subj_to <- round(length(dikenai$node_sentences[-c(phys_touch, phys_disease_affected, typo)])/length(dikenai$node_sentences) * 100, 2)
+# predominantly dikenai convey a frame where the syntactic subject is *subject to* regulation (e.g., sanction, fee, tax, retribution, punishment, obligation)
+```
+
+
+```{r top-collocates-kenai}
+ca_res %>% 
+  filter(node == "mengenai") %>% 
+  as.data.frame() %>% 
+  top_n(20, collstr) %>% 
+  mutate(p_fye = format(p_fye, digits = 4, scientific = TRUE),
+         w = paste("*", w, "*", sep = ""),
+         gloss = c("matter", "problem; issue", "impact", "existence", 
+                   "relationship", "what", "how", "the importance (of)", "matters",
+                   "target", "plan", "topic", "innate character(istic)", "condition",
+                   "gifts (of God)", "matter; issue", "price", "who", "safety", "the existence (of)")) %>% 
+  select(collocates = w, 
+         gloss,
+         n = a, 
+         `*p*~fisher-exact~-value` = p_fye, 
+         AssocStr = collstr) %>% 
+  knitr::kable(row.names = TRUE, caption = "The 20 most strongly attracted R1 collocates for *mengenai*")
+```
+
+
+The collocates for *mengenai* generally refers to abstract entities, some of which form a coherent semantic class. For instance, *hal* 'matter' (see (@mengenaihal)), *hal-hal* 'matters', *masalah* 'issue' (@mengenaimasalah), *soal* 'matter', and, roughly, *topik* 'topic', *dampak* 'impact' (@mengenaidampak) as well as *rencana* 'plan', may represent <span style="font-variant:small-caps;">matter</span>-related nouns.
+
+(@mengenaihal) mengenai hal
+(@mengenaimasalah) mengenai masalah
+(@mengenaidampak) mengenai dampak
+
+Two other nouns, namely, *keberadaan* and *adanya*, refer to <span style="font-variant:small-caps;">existence</span>. The remaining nouns are rather mixed (e.g., *keselamatan* 'safety', *harga* 'price', *kondisi* 'condition', *pentingnya* 'the importance (of)'). Another important class of attracted collocates is the WH-words *apa* 'what', *bagaimana* 'how', and *siapa* 'who', introducing the embedded WH-clauses:
+
+(@mengenai_apa) mengenai apa
+(@mengenai_bagaimana) mengenai bagaimana
+(@mengenai_siapa) mengenai siapa
+
+The use of *mengenai* with the attracted collocates as illustrated in (@mengenaimasalah) to (@mengenai_siapa) demonstrates the grammaticalisation^[According to Hopper and Traugott [-@hopper_grammaticalization_2003, 1], grammaticalisation is a linguistic phenomenon regarding "how lexical items and constructions come in certain linguistic contexts to serve grammatical functions or how grammatical items develop new grammatical functions".] of *mengenai*; it exhibits a syntactic function as a connective or clause linker [cf. @hopper_grammaticalization_2003, 4, 184], marking an oblique grammatical relation, more like preposition rather than a verbal predicate (see further below). In this function, *mengenai* roughly means 'regarding/concerning/in relation to', rather than 'subject to' (cf. (@dikenai_subject_to) below). Note that this grammaticalised meaning for *mengenai* is listed as its third meaning in *Kamus Besar Bahasa Indonesia* (KBBI) (the Great Dictionary of Indonesian), in addition to its lexical meaning (i.e., 'to come into contact with X') (see (@mengenai_pakaian)). 
+
+(@mengenai_pakaian) mengenai lexical meaning.
+
+It is argued that the grammatical meaning of *mengenai* (indicating relationship/connection) develops out of its physical meaning (indicating physical contact/touching). That is, when two things are in contact/in touch, they enter some kind of relationship/connection. The results in [Table \@ref(tab:top-collocates-kenai)](#top-collocates-kenai) also teach us that the primary meaning of a word in a dictionary may not be the most frequent one in usage as found in a corpus. Here we saw that the grammaticalised meaning of *mengenai* as a connective is much more frequent than its lexical meaning of touching. 
+
+Further evidence of the grammaticalised usage of *mengenai* above, compared to its usage for lexical meaning (as in (@mengenai_pakaian)), is its restricted morphosyntax. That is, *mengenai* meaning 'concerning/in relation to' only occurs in active *meN-* form; no paradigmatic opposition/contrast with passive *di*- (i.e. *dikenai*) exists with similar grammaticalised sense. Intuition suggests that the lexical meaning of passive *dikenai* is different from that of the active *mengenai* (exemplified in (@mengenai_pakaian)). Manual scrutiny of `r nrow(dikenai)` usage sentences for *dikenai* in `ind_mixed_2012_1M-sentences.txt` corpus reveals that `r subj_to`% of its usages evoke a situation where the syntactic subject of *dikenai* is *subjected to* certain regulations (e.g., sanction, tax, fee, obligation, punishment, retribution, etc.) (see @dikenai_subject_to):
+
+(@dikenai_subject_to) dikenai subject to
+
+Small percentages of the usage sentences (i.e., around `r round(length(phys_touch)/nrow(dikenai) * 100, 2)`%) still convey the physical touching/contact meaning (as in @mengenai_pakaian):
+
+(@dikenai_phys_touch) dikenai touch
+(@dikenai_cahaya) 891333 ... seolah-oleh pecahan-pecahan kaca cermin <m>dikenai</m> cahayanya demikian rupa sehingga percampuran warnanya menjadi tampak melalui pewarnaan yang pekat-kental."
+
+Brief comparison between the active *mengenai* and passive *dikenai* suggests that the passive form may have different, and conventionalised semantic trait compared to its active version, indicating that a given form (e.g., passive) cannot always be regarded as being derived from the other (i.e., the active). Now let us turn to [Table \@ref(tab:top-collocates-kenakan)](#top-collocates-kenakan) for the attracted collocates of *mengenakan*.
+
+```{r dikenakan}
+# conc_dikenakan <- readRDS("data/conc_dikenakan.rds")
+dikenakan_subj_to <- c(444, 443, 438, 437, 436, 435, 433, 432, 429, 428, 426, 424, 422, 421, 420, 419, 418, 415,
+                       413, 412, 411, 409, 407, 405, 404, 403, 402, 399, 393, 392, 391, 390, 389, 388,
+                       386, 385, 382, 380, 377, 376, 370, 368, 367, 366, 365, 364, 363, 362, 361, 359,
+                       357, 354, 353, 352, 348, 346, 345, 344, 343, 342, 341, 336, 335, 334, 331, 329,
+                       327, 323, 322, 320, 318, 315, 314, 313, 312, 311, 309, 308, 307, 306, 305, 304,
+                       303, 299, 298, 297, 296, 295, 292, 291, 288, 287, 285, 284, 283, 282, 280, 279,
+                       277, 275, 273, 272, 270, 269, 268, 266, 265, 263, 264, 260, 259, 257, 256, 252,
+                       251, 250, 249, 248, 246, 245, 244, 242, 241, 239, 236, 235, 234, 231, 230, 229,
+                       228, 227, 224, 223, 222, 220, 219, 218, 216, 215, 214, 212, 209, 208, 203, 201,
+                       200, 199, 195, 194, 193, 192, 190, 189, 188, 187, 186, 184, 183, 180, 178, 178,
+                       177, 173, 172, 171, 169, 165, 158, 157, 156, 153, 152, 151, 150, 147, 146, 138,
+                       136, 135, 132, 131, 130, 129, 127, 125, 124, 122, 121, 120, 119, 117, 115, 114,
+                       111, 110, 108, 107, 99, 98, 97, 96, 94, 91, 89, 87, 85, 83, 82, 81, 77, 76, 75,
+                       74, 72, 71, 68, 67, 63, 62, 61, 58, 56, 55, 43, 39, 38, 35, 34, 32, 28, 27, 26,
+                       25, 24, 23, 22, 21, 20, 19, 17, 15, 10, 8, 7, 6, 3, 1) # lanjut ke baris 291
+dikenakan_unclear_others <- c(445, 441, 425, 414, 356, 302, 276, 240, 238, 237, 233, 232, 221, 174, 170, 167, 163, 143, 126, 103, 79, 70, 59, 52, 46, 42, 40, 31, 30, 2)
+dikenakan_wear <- 446 - (length(dikenakan_unclear_others) + length(dikenakan_subj_to))
+dikenakan_wear_prop <- dikenakan_wear/446
+dikenakan_subj_to_prop <- length(dikenakan_subj_to)/446
+dikenakan_unclear_others_prop <- length(dikenakan_unclear_others)/446
+```
+
+
+```{r top-collocates-kenakan}
+ca_res %>% 
+  filter(node == "mengenakan") %>% 
+  as.data.frame() %>% 
+  top_n(20, collstr) %>% 
+  mutate(p_fye = format(p_fye, digits = 4, scientific = TRUE),
+         w = paste("*", w, "*", sep = ""),
+         gloss = c("clothes", "shirt", "pants", "dress", "cloak",
+                   "uniform", "skirt", "hijab", "shoes", "T-shirt",
+                   "clothing; attire", "jacket", "jacket; coat", "hat; cap", "veil; hood",
+                   "bra", "costume", "helmet", "(western-style) shirt", "sarong")) %>% 
+  select(collocates = w, 
+         gloss,
+         n = a, 
+         `*p*~fisher-exact~-value` = p_fye, 
+         AssocStr = collstr) %>% 
+  knitr::kable(row.names = TRUE, caption = "The 20 most strongly attracted R1 collocates for *mengenakan*")
+```
+
+As shown in [Table \@ref(tab:top-collocates-kenakan)](#top-collocates-kenakan), it is clear that *mengenakan* exhibits substantially different and rather restricted collocational patterns compared to *mengenai*. In this top-20 list, *mengenakan* is exclusively associated with <span style = "font-variant:small-caps;">clothing</span> nouns and conveys a lexical meaning of 'to put on/wear X (usually clothing)':
+
+(@mengenakan_seragam) 722930 Siswi yang masih mengenakan seragam putih abu-abu itu melemparkan senyuman ke arah kendaraan.
+(@dikenakan_seragam) 10806 Jubah yang <m>dikenakan</m>nya sudah berubah warna merah kecoklat-coklatan.
+
+Another crucial difference between *mengenakan* and *mengenai* is that the former (i.e., the -*kan* form) never occurs in a more abstract, grammaticalised context (i.e., 'concerning') as in the latter. This is in line with the grammaticalisation patterns attested in other languages where logical relation, such as <span style = "font-variant:small-caps;">concern</span>, has been typically developed out of a word/formative marker carrying locative meaning [see @heine_world_2002, 201-202], and previous studies in Indonesian linguistics [e.g., @arka_linguistic_2009] have shown that the suffix -*i* (but not -*kan*) carries the locative meaning. In this respect, in relation to the tested hypothesis (§[\@ref(intro)](#intro)), if Sneddon et al's [-@sneddon_indonesian_2010, 101] intention was that the 'subject to' meaning for *mengenai*/*mengenakan* refers to the grammaticalised meaning of *mengenai* discussed above, then, *mengenakan* is not the subsitute for *mengenai* in that grammaticalised sense, for the reason that *mengenai* and *mengenakan* are semantically distinct in their usage patterns. This claim is supported by the  collocational preference of *mengenakan* to nouns from the semantic domain of <span style = "font-variant:small-caps;">clothing</span>, corroborating the first meaning of *mengenakan* in KBBI, namely 'to put on/wear X (clothing)'. 
+
+# Conclusion {#conclusion}
+
+This study set out to demonstrate how a hypothesis concerning words meanings can be tested in quantitative terms. The hypothesis that we tested is one of the classic issues in Indonesian linguistics, namely, blurry semantic distinction between some of the verb pairs suffixed with -*kan* and -*i* [@sneddon_indonesian_2010, 101; cf. @arka_linguistic_2009]. Previous studies of this issue have generally been restricted to the analysis of semantic roles of the direct object of the contrasted verbs, and have largely ignored the *actual* usage patterns of the contrasted verbs in large collection of text (i.e., linguistic corpora). Leveraging the availability of large language corpora, the advent of quantitative corpus-linguistic method, and usage-based linguistics, we propose the application of *Collostructional Analysis* (CollAna) [@hoffmann_collostructional_2013] (§[\@ref(collana)](#collana)) in addressing that long-standing issue in a new light. As a case study, we analysed a verb-pair whose characterisation is problematic from our perspective as Indonesian native-speakers, namely *mengenai*/*mengenakan*; both are translated as 'subject to' by Sneddon et al. [-@sneddon_indonesian_2010, 101], but without any sentential examples provided.
+
+Contrary to Sneddon et al's claim for the verbs' similar meaning, our findings clearly indicate that *mengenai* and *mengenakan* exhibit distinct collocational preferences, showing substantial semantic differences between them. *Mengenakan*'s top-20 attracted collocates predominantly refer to <span style= "font-variant:small-caps;">clothing</span> words ([Table \@ref(tab:top-collocates-kenakan)](#top-collocates-kenakan)), evoking the meaning of 'to wear X (clothes)'. In contrast, *mengenai* attracts abstract nouns ([Table \@ref(tab:top-collocates-kenai)](#top-collocates-kenai)), and is used predominantly as a grammaticalised connective, expressing 'regarding/concerning/in relation to' sense (cf. example (@mengenaimasalah) to (@mengenai_siapa)). The findings reported here shed new light on the value of keeping an eye on actual usage data and applying quantitative method in (i) characterising semantic (dis)similarity between words, as in the case of the -*kan*/-*i* verb pairs in Indonesian, and (ii) finding highly conventionalised verb-collocate pairings.
+
+# References
