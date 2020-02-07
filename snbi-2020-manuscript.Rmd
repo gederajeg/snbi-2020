@@ -3,15 +3,15 @@ title: "Contrasting the semantics of Indonesian -*kan* & -*i* verb pairs: A usag
 author: "Gede Primahadi Wijaya R<span style='font-variant:small-caps;'>ajeg</span>, I Made R<span style='font-variant:small-caps;'>ajeg</span>, I Wayan A<span style='font-variant:small-caps;'>rka</span>"
 date: "Created 21 January, 2020; Last Update `r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::pdf_document2:
-    fig_caption: true
-    number_sections: true
-    df_print: "kable"
+  html_notebook: default
   bookdown::word_document2:
     fig_caption: true
     fig_width: 6
     reference_docx: "snbi-2020-manuscript-temp.docx"
-  html_notebook: default
+  bookdown::pdf_document2:
+    fig_caption: true
+    number_sections: true
+    df_print: "kable"
 bibliography: 'biblio.bib'
 link-citations: false
 csl: 'apa-single-spaced.csl'
@@ -227,7 +227,7 @@ For expository reason, the *p*-value is converted into a base-ten logarithm valu
 -log(pfye$p.value, 10) 
 ```
 
-The log-transformed *p*-value above indicates highly strong attraction between *mengenakan* and *baju* 'clothes/apparel'. All the above steps need to be repeated to all R1 collocates of the studied verbs; we removed the top-20 most frequent words^[These are the stopwords removed from the analysis: `r paste(paste("*", pull(collout$freqlist_df[1:20, ], w), "* (n = ", prettyNum(pull(collout$freqlist_df[1:20, ], n), big.mark = ","), ")", sep = ""), collapse = "; ")`. They are predominantly function words, such as prepositions, pronouns, conjunctions, determiners.] in the corpus from the calculation of the association strength^[Note that the total size of the corpus (i.e., `r prettyNum(addmargins(matrix(data = c(exmdata$a, exmdata$b, exmdata$c, exmdata$d), nrow = 2, byrow = F))[3,3], big.mark = ",")`; see the bottom right cell in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1)) is reduced from the original size-count (i.e., `r corpsize`). This is due to two procedures: (i) the removal of the 20 stop words, and (ii) tokenisation of the original corpus in creating frequency list for collocational analysis; the frequency list only retains alphabetic word-tokens that are at least two-letters long, and, in that case, we removed one-letter tokens, numbers, and incomplete strings (i.e., those initiated or ended with hyphens).]. Then, the collocates for each verb can be rank ordered according to their AssocStr values. To automatise this computation, including the collocates retrieval, we designed an R package called *collogetr* [@rajeg_collogetr_2019], and wrote the paper fully in R using R Markdown to interleave the narratives with the R codes.
+The log-transformed *p*-value above indicates highly strong attraction between *mengenakan* and *baju* 'clothes/apparel'. All the above steps need to be repeated to all R1 collocates of the studied verbs; we removed the top-20 most frequent words^[These are the stopwords removed from the analysis: `r paste(paste("*", pull(collout$freqlist_df[1:20, ], w), "* (n = ", prettyNum(pull(collout$freqlist_df[1:20, ], n), big.mark = ","), ")", sep = ""), collapse = "; ")`. They are predominantly function words, such as prepositions, pronouns, conjunctions, determiners.] in the corpus from the calculation of the association strength^[Note that the total size of the corpus (i.e., `r prettyNum(addmargins(matrix(data = c(exmdata$a, exmdata$b, exmdata$c, exmdata$d), nrow = 2, byrow = F))[3,3], big.mark = ",")`; see the bottom right cell in [Table \@ref(tab:fye-on-example-table1)](#fye-on-example-table1)) is reduced from the original size-count (i.e., `r corpsize`). This is due to two procedures: (i) the removal of the 20 stop words, and (ii) tokenisation of the original corpus in creating frequency list for collocational analysis; the frequency list only retains alphabetic word-tokens that are at least two-letters long, and, in that case, we removed one-letter tokens, numbers, and incomplete strings (i.e., those initiated or ended with hyphens).]. Then, the collocates for each verb can be rank ordered according to their AssocStr values. To automatise this computation, including the collocates retrieval, we designed an R package called *collogetr* [@rajeg_collogetr_2019], and wrote the paper fully in R using R Markdown to interleave the narratives with the R codes [the dataset and R Markdown with codes are available as @Rajeg2020]
 
 # Results and discussion {#results}
 
